@@ -39,7 +39,7 @@ redis.set(rk("user", userid), "John Doe") # key is "myapp:user:10:test"
 ```
 
 ## Even more advanced
-Define keys with ```rk``` and avoid typos even in key names!
+Define key elements with ```rk``` and avoid typos even in key names!
 
 ```
 require "redis"
@@ -53,6 +53,19 @@ rk.user = "user"
 
 userid = 10
 redis.set(rk(rk.user, userid), "John Doe") # key is "myapp:user:10:test"
+```
+
+This is what happens if you access a self defined key that does not exist (on typo):
+```
+require "redis"
+require "rk"
+
+redis = Redis.new
+
+rk.stats = "stats"
+
+redis.incr(rk(rk.stat, 1)) # typo here, accessing 'stat' instead of 'stats'
+=> RuntimeError: 'rk.stat' is undefined
 ```
 
 # Options
