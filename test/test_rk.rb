@@ -5,6 +5,15 @@ class TestRk < Minitest::Test
   extend Minitest::Spec::DSL
 
   let(:simple_user_10) { ["user", 10] }
+  let(:class_using_rk) do
+    class Test
+      def key
+        rk("user", 10)
+      end
+    end
+
+    Test.new.key
+  end
 
   def setup
     rk.separator = ":"
@@ -13,7 +22,7 @@ class TestRk < Minitest::Test
   end
 
   def test_simple_key
-    assert_equal "user:10", rk(simple_user_10)
+    assert_equal simple_user_10.join(":"), rk(simple_user_10)
   end
 
   def test_long_key
@@ -24,34 +33,38 @@ class TestRk < Minitest::Test
 
   def test_key_prefix
     rk.prefix = "myapp"
-    assert_equal "myapp:user:10", rk(simple_user_10)
+    assert_equal "myapp:#{simple_user_10.join(":")}", rk(simple_user_10)
   end
 
   def test_key_suffix
     rk.suffix = "test"
-    assert_equal "user:10:test", rk(simple_user_10)
+    assert_equal "#{simple_user_10.join(":")}:test", rk(simple_user_10)
   end
 
   def test_key_prefix_and_suffix
     rk.prefix = "myapp"
     rk.suffix = "test"
-    assert_equal "myapp:user:10:test", rk(simple_user_10)
+    assert_equal "myapp:#{simple_user_10.join(":")}:test", rk(simple_user_10)
   end
 
   def test_change_separator
     rk.separator = "-"
-    assert_equal "user-10", rk(simple_user_10)
+    assert_equal simple_user_10.join("-"), rk(simple_user_10)
   end
 
   def test_use_defined_key_element
     rk.user = "user"
-    assert_equal "user:10", rk(rk.user, 10)
+    assert_equal simple_user_10.join(":"), rk(rk.user, 10)
   end
 
   def test_use_undefined_key_element
     assert_raises RuntimeError do
-      rk.undefined
+      rk.something
     end
+  end
+
+  def test_rk_globally_available
+    assert_equal simple_user_10.join(":"), class_using_rk
   end
 
 end
