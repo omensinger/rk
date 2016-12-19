@@ -69,11 +69,11 @@ redis.incr(rk(rk.stat, 1)) # typo here, accessing 'stat' instead of 'stats'
 ```
 
 # Options
-You may want to use these options:
-|Option|Default value|Example|
+You may want to use these options (methods):
+|Option (method)|Default value|Example|
 |-|-|-|
-|prefix|```""``` (empty)|```rk.prefix = "myapp"```|
-|suffix|```""``` (empty)|```rk.suffix = "test"```|
-|separator|```:```|```rk.separator = "|"``` (uses pipe as separator for parts of the key)|
-|any other|```""``` (empty)|```rk.user = "user"``` or ```rk.status = "stat"```|
+|prefix|`""` (empty)|`rk.prefix = "myapp"`|
+|suffix|`""` (empty)|`rk.suffix = "test"`|
+|separator|`:`|`rk.separator = "|"` (uses pipe as separator for parts of the key)|
+|any other|`""` (empty)|`rk.user = "user"` or `rk.stats = "stats"`|
 
