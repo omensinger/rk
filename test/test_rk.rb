@@ -15,6 +15,8 @@ class TestRk < Minitest::Test
     Test.new.key
   end
 
+  let(:keys) { { user: "user", "statistics" => "stats", "session" => :sess } }
+
   def setup
     rk.separator = ":"
     rk.prefix = ""
@@ -65,6 +67,23 @@ class TestRk < Minitest::Test
 
   def test_rk_globally_available
     assert_equal simple_user_10.join(":"), class_using_rk
+  end
+
+  def test_set_keys
+    rk.keys = keys
+    keys.each_pair do |key, val|
+      # rk always return a string for a key, thus val.to_s
+      assert_equal rk.send(key), val.to_s
+    end
+  end
+
+  def test_get_keys
+    rk.keys = keys
+
+    # Build hash from "keys", keys/values converted to strings
+    keys_as_strings = Hash[keys.map { |key, val| [key.to_s, val.to_s] }]
+
+    assert_equal keys_as_strings, rk.keys
   end
 
 end

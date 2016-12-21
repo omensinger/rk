@@ -33,9 +33,10 @@ redis = Redis.new
 
 rk.prefix = "myapp"
 rk.suffix = "test"
+rk.separator = "-"
 
 userid = 10
-redis.set(rk("user", userid), "John Doe") # key is "myapp:user:10:test"
+redis.set(rk("user", userid), "John Doe") # key is "myapp-user-10-test"
 ```
 
 ## Even more advanced
@@ -68,13 +69,32 @@ redis.incr(rk(rk.stat, 1)) # typo here, accessing 'stat' instead of 'stats'
 => RuntimeError: 'rk.stat' is undefined
 ```
 
+Use ```rk.keys``` to assign multiple keys with a hash (for example loaded from a configuration file):
+```
+require "redis"
+require "rk"
+
+redis = Redis.new
+
+rk.keys = { user: "user", "statistics" => "stats", "session" => :sess }
+
+rk.user # => "user"
+rk.statistics # => "stats"
+rk.session # => "sess"
+
+userid = 10
+redis.set(rk(rk.session, 10), "a3nc4E1f") # key is "sess:10"
+
+```
+
 # Options
 You may want to use these options (methods):
 
-|Option (method)|Default value|Example|
+|Method|Default value|Example|
 |---|---|---|
-|prefix|`""` (empty)|`rk.prefix = "myapp"`|
-|suffix|`""` (empty)|`rk.suffix = "test"`|
-|separator|`:`|`rk.separator = "-"` (uses minus as separator for parts of the key)|
+|`prefix` or `prefix=`|`""` (empty)|`rk.prefix => ""` or `rk.prefix = "myapp"`|
+|`suffix` or `suffix=`|`""` (empty)|`rk.suffix => ""` or `rk.suffix = "test"`|
+|`separator` or `separator=`|`:`|`rk.separator => ":"` or `rk.separator = "-"` (use minus as separator for parts of the key)|
+|`keys` or `keys=`|`[]` (empty)|`rk.keys = { user: "user", group: "grp" }; rk.user => "usr"` and `rk.group => grp` and `rk.keys => { "user" => "usr", "group" => "grp" }`|
 |any other|RuntimeError (if undefined)|`rk.user = "user"; rk.user => "user"` or `rk.something => RuntimeError: 'rk.something' is undefined`|
 
