@@ -95,6 +95,6 @@ You may want to use these options (methods):
 |`prefix` or `prefix=`|`""` (empty)|`rk.prefix => ""` or `rk.prefix = "myapp"`|
 |`suffix` or `suffix=`|`""` (empty)|`rk.suffix => ""` or `rk.suffix = "test"`|
 |`separator` or `separator=`|`:`|`rk.separator => ":"` or `rk.separator = "-"` (use minus as separator for parts of the key)|
-|`keys` or `keys=`|`[]` (empty)|`rk.keys = { user: "user", group: "grp" }; rk.user => "usr"` and `rk.group => grp` and `rk.keys => { "user" => "usr", "group" => "grp" }`|
-|any other|RuntimeError (if undefined)|`rk.user = "user"; rk.user => "user"` or `rk.something => RuntimeError: 'rk.something' is undefined`|
+|`keys` or `keys=`|`[]` (empty)|`rk.keys = { user: "usr", group: "grp" }; rk.user => "usr"` and `rk.group => grp` and `rk.keys => { "user" => "usr", "group" => "grp" }`|
+|any other|RuntimeError (if undefined)|`rk.user = "usr"; rk.user => "usr"` or `rk.something => RuntimeError: 'rk.something' is undefined`|
 
