@@ -18,9 +18,11 @@ class TestRk < Minitest::Test
   let(:keys) { { user: "user", "statistics" => "stats", "session" => :sess } }
 
   def setup
-    rk.separator = ":"
-    rk.prefix = ""
-    rk.suffix = ""
+    Rk.configure do |config|
+      config.separator = ":"
+      config.prefix = ""
+      config.suffix = ""
+    end
   end
 
   def test_simple_key
@@ -60,7 +62,7 @@ class TestRk < Minitest::Test
   end
 
   def test_use_undefined_key_element
-    assert_raises RuntimeError do
+    assert_raises NoMethodError do
       rk.something
     end
   end
@@ -86,4 +88,32 @@ class TestRk < Minitest::Test
     assert_equal keys_as_strings, rk.keys
   end
 
+  def test_can_access_config_attributes
+    Rk.configure("test") do |config|
+      config.separator = ":"
+      config.prefix = "pre"
+      config.suffix = "suf"
+    end
+
+    assert_equal ":", test_rk.separator
+    assert_equal "pre", test_rk.prefix
+    assert_equal "suf", test_rk.suffix
+  end
+
+  def test_allow_second_setting
+    Rk.configure("foo") do |config|
+      config.separator = "-"
+    end
+
+    assert_equal "-", foo_rk.separator
+    assert_equal ":", rk.separator
+  end
+
+  def test_named_rk_creates_key
+    Rk.configure("foo") do |config|
+      config.prefix = "foo"
+      config.separator = "-"
+    end
+    assert_equal "foo-bar", foo_rk("bar")
+  end
 end

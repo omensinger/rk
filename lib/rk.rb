@@ -1,5 +1,18 @@
-# Module for including +rk+ to global namespace (class Object).
+# frozen_string_literal: true
+
+require_relative "../lib/global_call"
+
 module Rk
+
+  # Create a rk-configuration
+  #  * <tt>name</tt> - : optional for creating named configurations
+  #  * <tt>block</tt> - : optional for setting configurations for details see Rk#initialize
+  def self.configure(name = nil)
+    instance = Rk.new
+    yield(instance) if block_given?
+
+    Object.include(GlobalCall.new(name: name, rk_instance: instance))
+  end
 
   # Build Redis keys of several elements.
   #   rk("user", 10) => "user:10"
@@ -12,9 +25,10 @@ module Rk
     # * <tt>suffix</tt> - empty
     # * <tt>keys</tt> - empty
     def initialize
-      @separator = ":"
-      @prefix = ""
-      @suffix = ""
+      self.separator = ":"
+      self.prefix = ""
+      self.suffix = ""
+      # attr_accessor is overwritten to create methods for keys
       @keys = {}
     end
 
@@ -28,7 +42,9 @@ module Rk
     #   rk(rk.user, 10) => "user:10"
     def method_missing(method, *arg)
       # Raise an error if a method gets accessed which was not defined before
-      raise RuntimeError, "'rk.#{method.to_s}' is undefined" unless method.to_s.include?("=")
+      unless method.to_s.include?("=")
+        return super
+      end
 
       # Define a method to return a value as set, for example rk.settings = 'set' defines
       # a method called "settings" which returns the string "set"
@@ -58,27 +74,10 @@ module Rk
         self.send("#{key}=", val)
       end
     end
-
   end # class Rk
-
-  # Create and call a global instance of Rk to either build a key or set/get attributes.
-  def rk(*elements)
-    $_rk = Rk.new unless $_rk
-
-    # Differ between calling "rk" without/with params
-    if elements.empty?
-      # Return instance of Rk for calling methods like "rk.separator"
-      $_rk
-    else
-      # Return key build by Rk.rk
-      $_rk.rk(elements)
-    end
-  end
-
 end # module Rk
 
+# Create a default rk to use it without configuring anything
 # We could use +extend Rk+ to extend only +main+, but we would have to +include Rk+ in
-# any class, hence we include Rk to the global object.
-class Object
-  include Rk
-end
+#any class, hence we include Rk to the global object
+Object.include(Rk::GlobalCall.new(name: nil, rk_instance: Rk::Rk.new))
