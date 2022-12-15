@@ -98,6 +98,7 @@ class TestRk < Minitest::Test
     assert_equal ":", test_rk.separator
     assert_equal "pre", test_rk.prefix
     assert_equal "suf", test_rk.suffix
+    assert_equal "test", test_rk.rk_name
   end
 
   def test_allow_second_setting

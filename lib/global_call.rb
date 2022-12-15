@@ -3,11 +3,11 @@
 module Rk
   # Anonymous module for including +rk+ to global namespace (class Object).
   class GlobalCall < Module
-    def initialize(name:, rk_instance:)
-      rk_name = if name.to_s.empty?
+    def initialize(rk_instance)
+      rk_name = if rk_instance.rk_name.to_s.empty?
         "rk"
       else
-        "#{name}_rk"
+        "#{rk_instance.rk_name}_rk"
       end
 
       $_rk ||= {}

@@ -9,15 +9,16 @@ module Rk
   #  * <tt>block</tt> - : optional for setting configurations for details see Rk#initialize
   def self.configure(name = nil)
     instance = Rk.new
+    instance.rk_name = name
     yield(instance) if block_given?
 
-    Object.include(GlobalCall.new(name: name, rk_instance: instance))
+    Object.include(GlobalCall.new(instance))
   end
 
   # Build Redis keys of several elements.
   #   rk("user", 10) => "user:10"
   class Rk
-    attr_accessor :separator, :prefix, :suffix, :keys
+    attr_accessor :separator, :prefix, :suffix, :keys, :rk_name
 
     # Set defaults
     # * <tt>separator</tt> - :
@@ -79,5 +80,5 @@ end # module Rk
 
 # Create a default rk to use it without configuring anything
 # We could use +extend Rk+ to extend only +main+, but we would have to +include Rk+ in
-#any class, hence we include Rk to the global object
-Object.include(Rk::GlobalCall.new(name: nil, rk_instance: Rk::Rk.new))
+# any class, hence we include Rk to the global object
+Object.include(Rk::GlobalCall.new(Rk::Rk.new))
